@@ -1,119 +1,4 @@
-let grid = []
-let font = "iA Writer Mono"
-let fontSize = 16;
-let dX = 12;
-let dY = 18;
-let sizeX
-let sizeY
-
-let _primary = "white"
-
-let speed = 130
-
-let frameCounter = 0;
-let width = 800;
-let height = 800;
-
-function gridCircle(x, y, r, qq = false)
-{
-
-	for (let i = 0; i < r; i += 0.1)
-	{
-		for (let j = 0; j < Math.sqrt(r * r - i * i); j++)
-		{
-			// if (i * i + j * j <= r * r)
-			{
-				// let p = Math.round(x + i)
-				// let q = Math.round(y + j)
-				let a = Math.round(255 * Math.sqrt((i * i + j * j) / (r * r) ))
-
-                // let c
-				// if (qq)
-				// {
-				// 	 c = color(255 - a, 255 - a, 255 - a)
-	
-				// }
-				// else
-				// {
-				// 	 c = color(a, a, a)
-				// }
-				//c.setAlpha(a)
-
-                if (!qq)
-                {
-                    a = 256 - a;
-                }
-
-                // if (random(100) > 97)
-                //     a += random(2) - 4
-
-                //a = min(255, max(a, 0))
-
-                let chars = ".-!^.-.-~+xo░▒▓█"
-                let c = chars[(a / 256 * chars.length | 0 ) % chars.length]
-                
-
-				dot(Math.round(x + i), Math.round(y + j), { letter: c, fill: _primary })
-				dot(Math.round(x + i), Math.round(y - j), { letter: c, fill: _primary })
-				dot(Math.round(x - i), Math.round(y + j), { letter: c, fill: _primary })
-				dot(Math.round(x - i), Math.round(y - j), { letter: c, fill: _primary })
-			}
-		}
-
-		
-	}
-
-	// for (let i = 0; i < TWO_PI; i += TWO_PI / 100)
-	// {
-	// 	let p = (x + r * sin(i)) | 0
-	// 	let q = (y + r * cos(i)) | 0
-
-	// 	dot(p, q, { letter: ".", fill: "blue" })
-	// }
-}
-
-function dot(x, y, o)
-{
-	if (x < 0 || x >= sizeX)
-	{
-		return;
-	}
-
-	if (y < 0 || y >= sizeY)
-	{
-		return;
-	}
-
-	grid[x][y] = o
-}
-
-
-function drawGrid()
-{
-	for (let i = 0; i < sizeX; i++) 
-	{
-		for (let j = 0; j < sizeY; j++) 
-		{
-			fill(grid[i][j].fill)
-			text(grid[i][j].letter || "", i * dX, j * dY)
-		}
-	}
-}
-
-function clearGrid()
-{
-	for (let i = 0; i < sizeX; i++) 
-	{
-		grid[i] = []
-		for (let j = 0; j < sizeY; j++) 
-		{
-			grid[i][j] = {
-				letter: null,
-				fill: _primary
-			}
-		}
-	}
-}
+let flies = []
 
 
 function setup() {
@@ -125,7 +10,42 @@ function setup() {
 	sizeX = width / dX
 	sizeY = height / dY
 
+	for (let i = 0; i < sizeX; i++)
+	{
+		for (let j = 0; j < sizeY; j++)
+		{
+			flies.push({ x: i, y: j, timer: random(300) | 0, letter: getchar("!@#$%^"), maxTimer: random(300) |  0 })
+		}
+	}
 	
+}
+
+
+
+function update()
+{	
+	// for (let i = 2; i < sizeX - 2; i++)
+	// {
+	// 	for (let j = 2; j < sizeY - 2; j++)
+	// 	{
+	// 		if (i % 2 == 0 && j % 2 == 0)
+	// 			dot(i, j, getchar("!@#$!@#%&%", 2))
+	// 	}
+	// }
+
+	flies.forEach(fly => {
+		if (fly.timer === 0)
+		{
+			dot(fly.x, fly.y, fly.letter)
+		}
+
+		fly.timer++;
+		if (fly.timer * 10 > fly.maxTimer)
+		{
+			fly.timer = 0;
+		}
+	})
+
 }
 
 function draw() 
@@ -136,8 +56,9 @@ function draw()
 
 	clear()
 	clearGrid();
-	gridCircle(sizeX / 2, sizeY / 2, 10 - cos(frameCounter/ speed) * 10)
-	gridCircle(sizeX / 2, sizeY / 2, sin(frameCounter/ speed) * 9, true)
+
+	update();
+	
 	
 	drawGrid(); 
 }

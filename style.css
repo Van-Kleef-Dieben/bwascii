@@ -26,8 +26,10 @@ body.dark
 
 .container 
 {
-  max-width: 800px;
+  position: relative;
+  max-width: 792px;
   margin: 0 auto;
+  margin-top: 20px;
 }
 
 canvas {
@@ -38,7 +40,8 @@ canvas {
 .toggle
 {
   position: absolute;
-  top: 20px;
+  top: 0px;
+  left: -90px;
 }
 
 .toggle {
