@@ -1,19 +1,10 @@
-let m = (p) =>
-
-{
-        
-    return {
-        setup: () =>
-        {
-            p.createCanvas(792, 792, document.querySelector("#canvas"))
-            console.log('asdfasf')
-        }
-    }
-
-}
-
 let currentSketch;
 
+let el = document.querySelector('.toggle');
+
+el.onchange = function() {
+    document.querySelector("body").classList.toggle('dark');
+}
 
 for (const el of document.querySelectorAll("a.sketch"))
 {
@@ -25,14 +16,10 @@ for (const el of document.querySelectorAll("a.sketch"))
         e.target.classList.add("active")
 
         if (currentSketch) 
+        {
             currentSketch.remove();
-        console.log(e.target.id)
-        switch(e.target.id){
-            case "s1": 
-                currentSketch = new p5(s1); break;
-            case "s2": 
-                currentSketch = new p5(s2); break;
         }
-
+        
+        currentSketch = new p5(window[e.target.id]);
     })
 }

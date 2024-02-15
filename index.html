@@ -18,25 +18,19 @@
       <div class="sidebar">
         <input class="toggle" type="checkbox" />
         <ul>
-          <li><a class="sketch" href="#" id="s1">circle</a></li>
-          <li><a class="sketch" href="#" id="s2">square</a></li>
+          <li><a class="sketch" href="#" id="s1">rain</a></li>
+          <li><a class="sketch" href="#" id="s2">snake</a></li>
+          <li><a class="sketch" href="#" id="s3">breathe</a></li>
+          <li><a class="sketch" href="#" id="s4">fire flies</a></li>
         </ul>
       </div>
       <canvas id="canvas"></canvas>
     </div>
     <script src="basic.js"></script>
-    <!-- <script src="sketch.js"></script> -->
-
     <script src="s1.js"></script>
     <script src="s2.js"></script>
+    <script src="s3.js"></script>
+    <script src="s4.js"></script>
     <script src="main.js"></script>
-
-    <script>
-      var el = document.querySelector('.toggle');
-
-      el.onchange = function() {
-        document.querySelector("body").classList.toggle('dark');
-      }
-    </script>
   </body>
 </html>

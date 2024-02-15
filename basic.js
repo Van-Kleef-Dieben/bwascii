@@ -1,130 +1,199 @@
-let grid = []
 let font = "iA Writer Mono"
 let fontSize = 16;
 let dX = 12;
 let dY = 18;
-let sizeX
-let sizeY
-
-let _primary = "white"
-
-let speed = 130
-
-let frameCounter = 0;
 let width = 792;
 let height = 792;
 
-function gridCircle(x, y, r, qq = false)
-{
+let sizeX = width / dX;
+let sizeY = height/ dY;
 
-	for (let i = 0; i < r; i += 0.1)
-	{
-		for (let j = 0; j < Math.sqrt(r * r - i * i); j++)
-		{
-			// if (i * i + j * j <= r * r)
-			{
-				// let p = Math.round(x + i)
-				// let q = Math.round(y + j)
-				let a = Math.round(255 * Math.sqrt((i * i + j * j) / (r * r) ))
+let frameCount = 0;
 
-                // let c
-				// if (qq)
-				// {
-				// 	 c = color(255 - a, 255 - a, 255 - a)
-	
-				// }
-				// else
-				// {
-				// 	 c = color(a, a, a)
-				// }
-				//c.setAlpha(a)
+let basic = {
 
-                if (!qq)
+        p: null,
+
+        grid: [],
+        dataGrid: [],
+        _primary: "white",
+
+        circle(x, y, r, callback, letter, fill) 
+        {
+        
+            for (let i = 0; i < r; i += 0.1)
+            {
+                for (let j = 0; j < Math.sqrt(r * r - i * i); j++)
                 {
-                    a = 256 - a;
+                    let a = Math.round(255 * Math.sqrt((i * i + j * j) / (r * r) ))
+                        
+                    if (callback)
+                    {
+                        let o = callback(a)
+                        this.dot(Math.round(x + i), Math.round(y + j), o.letter, o.fill)
+                        this.dot(Math.round(x + i), Math.round(y - j), o.letter, o.fill)
+                        this.dot(Math.round(x - i), Math.round(y + j), o.letter, o.fill)
+                        this.dot(Math.round(x - i), Math.round(y - j), o.letter, o.fill)
+                    }
+                    else
+                    {
+                        this.dot(Math.round(x + i), Math.round(y + j), letter, fill)
+                        this.dot(Math.round(x + i), Math.round(y - j), letter, fill)
+                        this.dot(Math.round(x - i), Math.round(y + j), letter, fill)
+                        this.dot(Math.round(x - i), Math.round(y - j), letter, fill)
+
+                    }
+                   
                 }
-
-                // if (random(100) > 97)
-                //     a += random(2) - 4
-
-                //a = min(255, max(a, 0))
-
-                let chars = ".-!^.-.-~+xo░▒▓█"
-                let c = chars[(a / 256 * chars.length | 0 ) % chars.length]
+        
                 
+            }
+        },
+        
+        dot(x, y, letter, fill = null) 
+        {
+            if (x < 0 || x >= sizeX)
+            {
+                return;
+            }
+        
+            if (y < 0 || y >= sizeY)
+            {
+                return;
+            }
+        
+            this.grid[x][y].letter = letter,
+            this.grid[x][y].fill = fill ?? this._primary 
+            
+        },
+        
+        getchar(string, index = null, max = null) 
+        {
+            if (max !== null)
+            {
+                index = ((index / max) * string.length | 0) % string.length
+            }
+           
+            if (index === null)
+            {
+                index = this.p.random(string.length) | 0
+            }
 
-				dot(Math.round(x + i), Math.round(y + j), { letter: c, fill: _primary })
-				dot(Math.round(x + i), Math.round(y - j), { letter: c, fill: _primary })
-				dot(Math.round(x - i), Math.round(y + j), { letter: c, fill: _primary })
-				dot(Math.round(x - i), Math.round(y - j), { letter: c, fill: _primary })
-			}
-		}
+           
+        
+            index = this.p.max(0, this.p.min(string.length - 1, index))
+            return string[index]
+        },
+        
+        setupGrid() 
+        {
+            for (let i = 0; i < sizeX; i++)
+            {
+                this.grid[i] = []
+                this.dataGrid[i] = []
+                
+                for (let j = 0; j < sizeY; j++)
+                {
+                    this.grid[i][j] = {
+                        fill: this._primary,
+                        letter: null
+                    }
+        
+                    this.dataGrid[i][j] = {}
+                }
+            }
+        },
 
-		
-	}
+        setupDatagrid(callback)
+        {
+            for (let i = 0; i < sizeX; i++)
+            {
+                this.dataGrid[i] = []
+                
+                for (let j = 0; j < sizeY; j++)
+                {
+                    this.dataGrid[i][j] = callback(this.dataGrid[i][j])
+                }
+            }
+        },
+        
+        drawGrid(callback = null) 
+        {
+            for (let i = 0; i < sizeX; i++) 
+            {
+                for (let j = 0; j < sizeY; j++) 
+                {
+                    if (callback !== null)
+                    {
+                        let o = callback(this.grid[i][j], i, j)
 
-	// for (let i = 0; i < TWO_PI; i += TWO_PI / 100)
-	// {
-	// 	let p = (x + r * sin(i)) | 0
-	// 	let q = (y + r * cos(i)) | 0
+                        if (o)
+                        {
+                            this.p.fill(o.fill)
+                            this.p.text(o.letter || "", i * dX, j * dY)
+                        }
+                    }
+                    else 
+                    {
+                        this.p.fill(this.grid[i][j].fill)
+                        this.p.text(this.grid[i][j].letter || "", i * dX, j * dY)
+                    }
+                }
+            }
+        },
 
-	// 	dot(p, q, { letter: ".", fill: "blue" })
-	// }
-}
+        updateDatagrid(callback = null)
+        {
+            for (let i = 0; i < sizeX; i++) 
+            {
+                for (let j = 0; j < sizeY; j++) 
+                {
+                    if (callback !== null)
+                    {
+                        this.dataGrid[i][j] = callback(this.dataGrid[i][j], i, j)
+                    }
+                }
+            }
+        },
+        
+        clearGrid() 
+        {
+            for (let i = 0; i < sizeX; i++) 
+            {
+                for (let j = 0; j < sizeY; j++) 
+                {
+                    this.grid[i][j] = {
+                        letter: null,
+                        fill: this._primary
+                    }
+                }
+            }
+        },
 
-function dot(x, y, letter, fill)
-{
-	if (x < 0 || x >= sizeX)
-	{
-		return;
-	}
+        setup()
+        {
+            this.p.createCanvas(792, 792, document.querySelector("#canvas"))
+            this.p.textFont(font)
+            this.p.textAlign(this.p.LEFT, this.p.TOP)
+            this.setupGrid();
 
-	if (y < 0 || y >= sizeY)
-	{
-		return;
-	}
+        },
 
-	grid[x][y] = { letter: letter, fill: fill ?? _primary }
-}
+        draw() 
+        {
+            this.p.clear();
+            // clearGrid();
+            frameCount++
+            this._primary = document.querySelector("body").classList.contains("dark") ? "white" : "black"
+        }
 
-function getchar(string, index = null)
-{
-    if (index === null)
-    {
-        index = random(string.length) | 0
     }
 
-    index = max(0, min(string.length - 1, index))
-    return string[index]
-}
 
 
-function drawGrid()
-{
-	for (let i = 0; i < sizeX; i++) 
-	{
-		for (let j = 0; j < sizeY; j++) 
-		{
-			fill(grid[i][j].fill)
-			text(grid[i][j].letter || "", i * dX, j * dY)
-		}
-	}
-}
 
-function clearGrid()
-{
-	for (let i = 0; i < sizeX; i++) 
-	{
-		grid[i] = []
-		for (let j = 0; j < sizeY; j++) 
-		{
-			grid[i][j] = {
-				letter: null,
-				fill: _primary
-			}
-		}
-	}
-}
+
+
 
 
 
