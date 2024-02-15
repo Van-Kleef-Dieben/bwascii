@@ -1,10 +1,12 @@
 let grid = []
 let font = "iA Writer Mono"
-let fontSize = 20;
-let dX = 16;
-let dY = 24;
+let fontSize = 16;
+let dX = 12;
+let dY = 18;
 let sizeX
 let sizeY
+
+let speed = 130
 
 let frameCounter = 0;
 let width = 800;
@@ -19,25 +21,40 @@ function gridCircle(x, y, r, qq = false)
 		{
 			// if (i * i + j * j <= r * r)
 			{
-				let p = Math.round(x + i)
-				let q = Math.round(y + j)
+				// let p = Math.round(x + i)
+				// let q = Math.round(y + j)
 				let a = Math.round(255 * Math.sqrt((i * i + j * j) / (r * r) ))
-				console.log(a)
-				let c
-				if (qq)
-				{
-					 c = color(255 - a, 255 - a, 255 - a)
+
+                // let c
+				// if (qq)
+				// {
+				// 	 c = color(255 - a, 255 - a, 255 - a)
 	
-				}
-				else
-				{
-					 c = color(a, a, a)
-				}
+				// }
+				// else
+				// {
+				// 	 c = color(a, a, a)
+				// }
 				//c.setAlpha(a)
-				dot(Math.round(x + i), Math.round(y + j), { letter: "█", fill: c })
-				dot(Math.round(x + i), Math.round(y - j), { letter: "█", fill: c })
-				dot(Math.round(x - i), Math.round(y + j), { letter: "█", fill: c })
-				dot(Math.round(x - i), Math.round(y - j), { letter: "█", fill: c })
+
+                if (!qq)
+                {
+                    a = 256 - a;
+                }
+
+                // if (random(100) > 97)
+                //     a += random(2) - 4
+
+                //a = min(255, max(a, 0))
+
+                let chars = ".-!^.-.-~+xo░▒▓█"
+                let c = chars[(a / 256 * chars.length | 0 ) % chars.length]
+                
+
+				dot(Math.round(x + i), Math.round(y + j), { letter: c, fill: color("black") })
+				dot(Math.round(x + i), Math.round(y - j), { letter: c, fill: color("black") })
+				dot(Math.round(x - i), Math.round(y + j), { letter: c, fill: color("black") })
+				dot(Math.round(x - i), Math.round(y - j), { letter: c, fill: color("black") })
 			}
 		}
 
@@ -115,8 +132,8 @@ function draw()
 	frameCounter++
 	clear()
 	clearGrid();
-	gridCircle(sizeX / 2, sizeY / 2, 20 - abs(sin(frameCounter/ 70) * 10))
-	gridCircle(sizeX / 2, sizeY / 2, abs(sin(frameCounter/ 70) * 10), true)
+	gridCircle(sizeX / 2, sizeY / 2, 10 - cos(frameCounter/ speed) * 10)
+	gridCircle(sizeX / 2, sizeY / 2, sin(frameCounter/ speed) * 9, true)
 	
 	drawGrid(); 
 }
