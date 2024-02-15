@@ -10,6 +10,7 @@
 html, body {
   margin: 0;
   padding: 0;
+  font-family: 'iA Writer Mono', monospace;
   
 }
 
@@ -32,16 +33,41 @@ body.dark
   margin-top: 20px;
 }
 
+a {
+  text-decoration: none;
+  color : #888
+}
+
+a.active {
+  text-decoration: underline;
+  color: black
+}
+
+body.dark a.active
+{
+  color: white;
+}
 canvas {
   display: block;
   margin: 0 auto;
 }
 
-.toggle
-{
+.sidebar {
   position: absolute;
   top: 0px;
-  left: -90px;
+  left: -100px;
+  text-align: right;
+}
+
+ul li {
+  list-style: none;
+}
+
+.toggle
+{
+  /* position: absolute;
+  top: 0px;
+  left: -90px; */
 }
 
 .toggle {
@@ -58,6 +84,7 @@ canvas {
   cursor: pointer;
   background-color: #707070;
   transition: background-color ease 0.3s;
+  position: relative;
 }
 
 .toggle:before {

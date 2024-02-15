@@ -15,11 +15,21 @@
 
   <body class="dark">
     <div class="container">
-      <input class="toggle" type="checkbox" />
+      <div class="sidebar">
+        <input class="toggle" type="checkbox" />
+        <ul>
+          <li><a class="sketch" href="#" id="s1">circle</a></li>
+          <li><a class="sketch" href="#" id="s2">square</a></li>
+        </ul>
+      </div>
       <canvas id="canvas"></canvas>
     </div>
     <script src="basic.js"></script>
-    <script src="sketch.js"></script>
+    <!-- <script src="sketch.js"></script> -->
+
+    <script src="s1.js"></script>
+    <script src="s2.js"></script>
+    <script src="main.js"></script>
 
     <script>
       var el = document.querySelector('.toggle');
