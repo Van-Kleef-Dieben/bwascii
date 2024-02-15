@@ -6,6 +6,8 @@ let dY = 18;
 let sizeX
 let sizeY
 
+let _primary = "white"
+
 let speed = 130
 
 let frameCounter = 0;
@@ -51,10 +53,10 @@ function gridCircle(x, y, r, qq = false)
                 let c = chars[(a / 256 * chars.length | 0 ) % chars.length]
                 
 
-				dot(Math.round(x + i), Math.round(y + j), { letter: c, fill: color("black") })
-				dot(Math.round(x + i), Math.round(y - j), { letter: c, fill: color("black") })
-				dot(Math.round(x - i), Math.round(y + j), { letter: c, fill: color("black") })
-				dot(Math.round(x - i), Math.round(y - j), { letter: c, fill: color("black") })
+				dot(Math.round(x + i), Math.round(y + j), { letter: c, fill: _primary })
+				dot(Math.round(x + i), Math.round(y - j), { letter: c, fill: _primary })
+				dot(Math.round(x - i), Math.round(y + j), { letter: c, fill: _primary })
+				dot(Math.round(x - i), Math.round(y - j), { letter: c, fill: _primary })
 			}
 		}
 
@@ -107,7 +109,7 @@ function clearGrid()
 		{
 			grid[i][j] = {
 				letter: null,
-				fill: "black"
+				fill: _primary
 			}
 		}
 	}
@@ -115,7 +117,7 @@ function clearGrid()
 
 
 function setup() {
-	createCanvas(width, height);
+	createCanvas(width, height, document.getElementById("canvas"));
 	textFont(font)
 	textSize(fontSize)
 	textAlign(LEFT, TOP)
@@ -130,6 +132,8 @@ function draw()
 {
 
 	frameCounter++
+	_primary = document.querySelector("body").classList.contains("dark") ? "white" : "black"
+
 	clear()
 	clearGrid();
 	gridCircle(sizeX / 2, sizeY / 2, 10 - cos(frameCounter/ speed) * 10)
