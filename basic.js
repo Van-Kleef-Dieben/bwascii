@@ -17,6 +17,7 @@ let basic = {
         grid: [],
         dataGrid: [],
         _primary: "white",
+        _showFramecount: false,
 
         circle(x, y, r, callback, letter, fill) 
         {
@@ -83,6 +84,10 @@ let basic = {
         
             index = this.p.max(0, this.p.min(string.length - 1, index))
             return string[index]
+        },
+
+        inGrid(x, y){
+            return x >= 0 && x < sizeX && y >= 0 && y < sizeY
         },
         
         setupGrid() 
@@ -155,6 +160,17 @@ let basic = {
                 }
             }
         },
+
+        clearDatagrid()
+        {
+            for (let i = 0; i < sizeX; i++) 
+            {
+                for (let j = 0; j < sizeY; j++) 
+                {
+                    this.dataGrid[i][j] = {}
+                }
+            }
+        },
         
         clearGrid() 
         {
@@ -185,6 +201,19 @@ let basic = {
             // clearGrid();
             frameCount++
             this._primary = document.querySelector("body").classList.contains("dark") ? "white" : "black"
+        },
+
+        showFramecount(show = false)
+        {
+            this._showFramecount = show;
+        },
+
+        postDraw()
+        {
+            if (this._showFramecount) {
+                this.p.fill("red")
+                this.p.text(frameCount, 10, 10)
+            }
         }
 
     }
