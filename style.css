@@ -1,16 +1,7 @@
-/* ia-writer-mono-latin-400-normal */
-@font-face {
-  font-family: 'iA Writer Mono';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 400;
-  src: url(https://cdn.jsdelivr.net/fontsource/fonts/ia-writer-mono@latest/latin-400-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/ia-writer-mono@latest/latin-400-normal.woff) format('woff'), url(https://cdn.jsdelivr.net/fontsource/fonts/ia-writer-mono@latest/latin-400-normal.ttf) format('truetype');
-}
-
 html, body {
   margin: 0;
   padding: 0;
-  font-family: 'iA Writer Mono', monospace;
+  font-family: 'DM Mono', monospace;
   
 }
 
@@ -63,12 +54,6 @@ ul li {
   list-style: none;
 }
 
-.toggle
-{
-  /* position: absolute;
-  top: 0px;
-  left: -90px; */
-}
 
 .toggle {
   -webkit-appearance: none;
@@ -117,3 +102,46 @@ ul li {
 .toggle:checked:before {
   left: 32px;
 }
+
+@media only screen and (min-width: 600px) {
+
+    .desktop-hide 
+    {
+        display: none;
+    }
+}
+
+
+@media only screen and (max-width: 600px) {
+
+        .mobile-show 
+        {
+            display: block;
+        }
+
+        .mobile-hide
+
+        {
+            display: none;
+        }
+
+        .sidebar
+        {
+            left: 5px;
+            top: 70px;
+            background-color: rgba(255, 255, 255, 0.3);
+            text-align: left;
+            margin-left: 5px;
+            padding: 4px;
+            border-radius: 5px;
+        }
+
+        .sidebar ul {
+            padding-left: 0
+        }
+
+        .container {
+            margin-top: 0
+        }
+
+} 

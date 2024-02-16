@@ -2,9 +2,17 @@ s4 = (p) => {
 
     basic.p = p;
 
-    let glowTime = 50
+    // let glowTime = 1000
     let flies = []
     let r = 2
+    let maxDelta = 10;
+    let immuneTime = 0.7
+    let glowTime = 40
+    let maxTime = 400
+    let chars = "..:-+xo■■"
+
+    let minOpacity = 50
+
 
     function update() {
         flies.forEach(fly => {
@@ -16,7 +24,9 @@ s4 = (p) => {
                 fly.timer = 0;
             }
 
-            fly.status = (fly.timer > fly.maxTime - glowTime) ? "on" : "off"
+           
+
+            fly.status = (fly.timer > fly.maxTime - fly.glowTime) ? "on" : "off"
             {
                 
             }
@@ -24,6 +34,7 @@ s4 = (p) => {
             //neighbors.forEach(fly => { fly.timer += 1 })
 
             let fill = p.color(basic._primary)
+            let alpha = 0;
 
             switch (fly.status)
             {            
@@ -32,8 +43,8 @@ s4 = (p) => {
                    
                     let neighbors = []
 
-                    for (let i = -r; i < r; i++) {
-                        for (let j = -r; j < r; j++) {
+                    for (let i = -r; i < r + 1; i++) {
+                        for (let j = -r; j < r + 1; j++) {
                             if (!basic.inGrid(fly.x + i, fly.y + j))
                             {
                                 continue;
@@ -76,25 +87,34 @@ s4 = (p) => {
                         }
                     }
 
-                    let c = p.color("#FFD700")
-                    let g = p.color(basic._primary)
+                    // let c = p.color("#FFD700")
+                    // let g = p.color(basic._primary)
 
-                    fill = p.lerpColor(g, c, p.sin((fly.timer - (fly.maxTime - glowTime)) / glowTime * p.PI))
+                    let mix = [
+                        { stop: 0.0, color: "grey" },
+                        { stop: 0.3, color: "gold" },
+                        { stop: 0.6, color: "yellow" },
+                        { stop: 0.9, color: basic._primary }
+                    ]
+
+                    fill = basic.mixColors(mix, p.sin((fly.timer - (fly.maxTime - fly.glowTime)) / fly.glowTime * p.PI))
                     
-                    let alpha = (256 - 30) * p.sin((fly.timer - (fly.maxTime - glowTime)) / glowTime * p.PI) | 0
-                    fill.setAlpha(30 + alpha)
+                    alpha = (255 - minOpacity) * p.sin((fly.timer - (fly.maxTime - fly.glowTime)) / fly.glowTime * p.PI) | 0
+                    fill.setAlpha(alpha)
                   
 
                     break;
 
 
                 case "off":
-                    fill.setAlpha(30)
+                    alpha = minOpacity;
+                    fill.setAlpha(alpha)
                     break;
 
             }
 
-            basic.dot(fly.x, fly.y, fly.letter, fill)
+            basic.dot(fly.x, fly.y, basic.getchar(chars, alpha, 255), fill)
+            
 
             
         })
@@ -102,9 +122,9 @@ s4 = (p) => {
         basic.clearDatagrid();
 
         flies.forEach(fly => { 
-            fly.delta = p.min(fly.delta, 5)
+            fly.delta = p.min(fly.delta, maxDelta)
 
-            if (fly.timer > 0.6 * fly.maxTime)
+            if (fly.timer > immuneTime * fly.maxTime)
             {
                 fly.timer += fly.delta
             }
@@ -112,41 +132,68 @@ s4 = (p) => {
             
             fly.delta = 0
 
+            if (p.random(100) > 98)
+            {
+                // let dx = p.random([-1, 0, 1])
+                // let dy = p.random([-1, 0, 1])
+
+                // if (Math.pow(fly.x + dx - fly.originalX, 2) + Math.pow(fly.y + dy - fly.originalY, 2) < 25)
+                // {
+
+                // }
+
+                // if (basic.inGrid(fly.x + dx, fly.y + dy) && basic.dataGridEmpty(fly.x + dx, fly.x + dx))
+                // {
+                //     fly.x += dx
+                //     fly.y += dy
+                // }
+            }
+
             basic.dataGrid[fly.x][fly.y] = fly 
         })
 
     }
 
     p.draw = () => {
+      
         basic.draw();
 
+
+      
         basic.clearGrid();
-
         update();
-
+      
+            
         basic.drawGrid();
-
         basic.postDraw();
+        
+
+      
     }
 
     p.setup = () => {
         basic.setup()
         basic.showFramecount(true);
+
   
 
         for (let i = 0; i < sizeX; i++) {
             for (let j = 0; j < sizeY; j++) {
 
-                if (p.random(100) > 30)
+                // if (i % 2 === 0 && j % 2 === 0 )
+               
                 {
                     flies.push({ 
                         x: i, 
                         y: j, 
+                        originalX: i,
+                        originalY: j,
                         letter: "#", 
                         delta: 0,
                        
-                        timer: p.random(500 - 1) | 0,
-                        maxTime: 500,
+                        timer: p.random(maxTime) | 0,
+                        glowTime: glowTime,
+                        maxTime: maxTime,
                         
                         status: "off"
                     })
@@ -156,3 +203,4 @@ s4 = (p) => {
     }
 
 }
+

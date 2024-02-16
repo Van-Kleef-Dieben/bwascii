@@ -4,7 +4,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Sketch</title>
+    <title>...</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>    
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
+
 
     <link rel="stylesheet" type="text/css" href="style.css">
 
@@ -14,23 +19,41 @@
   </head>
 
   <body class="dark">
-    <div class="container">
-      <div class="sidebar">
-        <input class="toggle" type="checkbox" />
-        <ul>
-          <li><a class="sketch" href="#" id="s1">rain</a></li>
-          <li><a class="sketch" href="#" id="s2">snake</a></li>
-          <li><a class="sketch" href="#" id="s3">breathe</a></li>
-          <li><a class="sketch" href="#" id="s4">fire flies</a></li>
-        </ul>
-      </div>
-      <canvas id="canvas"></canvas>
-    </div>
-    <script src="basic.js"></script>
-    <script src="s1.js"></script>
-    <script src="s2.js"></script>
-    <script src="s3.js"></script>
-    <script src="s4.js"></script>
-    <script src="main.js"></script>
+    <main>
+        <button class="desktop-hide" style="
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            border: none;
+            border-radius: 10px;
+            padding: 4px 8px;
+            font-size: 25px;
+            background-color: #222;
+            z-index: 100;
+            " 
+            
+            
+            id="toggle-sidebar">🍔</button>
+        <div class="container">
+        
+            <div class="sidebar mobile-hide">
+                <input class="toggle" type="checkbox" />
+                <ul>
+                <li><a class="sketch" href="#" id="s1">rain</a></li>
+                <li><a class="sketch" href="#" id="s2">snake</a></li>
+                <li><a class="sketch" href="#" id="s3">breathe</a></li>
+                <li><a class="sketch" href="#" id="s4">fire flies</a></li>
+                </ul>
+            </div>
+
+            <canvas id="canvas"></canvas>
+        </div>
+        <script src="basic.js"></script>
+        <script src="s1.js"></script>
+        <script src="s2.js"></script>
+        <script src="s3.js"></script>
+        <script src="s4.js"></script>
+        <script src="main.js"></script>
+    </main>
   </body>
 </html>

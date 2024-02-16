@@ -1,12 +1,16 @@
-let font = "iA Writer Mono"
+let font = "DM Mono"
 let fontSize = 16;
 let dX = 12;
 let dY = 18;
-let width = 792;
-let height = 792;
+let preferredWidth = 792;
+let preferredHeight = 792;
 
-let sizeX = width / dX;
-let sizeY = height/ dY;
+let sizeX;
+let sizeY;
+let screenX
+let screenY
+
+
 
 let frameCount = 0;
 
@@ -121,6 +125,15 @@ let basic = {
                 }
             }
         },
+
+        dataGridEmpty(x, y)
+        {
+            if (!this.dataGrid[x][y])
+            {
+                return true;
+            }
+            return Object.keys(this.dataGrid[x][y]).length === 0
+        },
         
         drawGrid(callback = null) 
         {
@@ -188,9 +201,17 @@ let basic = {
 
         setup()
         {
-            this.p.createCanvas(792, 792, document.querySelector("#canvas"))
+            
             this.p.textFont(font)
             this.p.textAlign(this.p.LEFT, this.p.TOP)
+
+            screenX = this.p.min(preferredWidth, this.p.displayWidth)
+            screenY = screenX === preferredWidth ? this.p.min(preferredHeight, this.p.displayHeight) : this.p.displayHeight
+
+            sizeX = (screenX / dX) | 0
+            sizeY = (screenY / dY) | 0
+
+            this.p.createCanvas(screenX, screenY, document.querySelector("#canvas"))
             this.setupGrid();
 
         },
@@ -212,8 +233,34 @@ let basic = {
         {
             if (this._showFramecount) {
                 this.p.fill("red")
-                this.p.text(frameCount, 10, 10)
+                this.p.text("fps: " + frameCount, 10, 10)
             }
+        },
+
+        mixColors(colors, value, max = 1.0)
+        {
+            if (colors.length < 2)
+            {
+                throw "Incorrect use of mixColors, only 1 color"
+            }
+
+            let colorA
+            let colorB
+
+            for (let i = 0; i < colors.length - 1; i++)
+            {
+                colorA = colors[i]
+                colorB = colors[i + 1]
+
+                if (value/max < colors[i + 1].stop)
+                {
+                    break;
+                }
+                
+            }
+
+            return this.p.lerpColor(this.p.color(colorA.color), this.p.color(colorB.color), ((value / max) - colorA.stop) / (colorB.stop - colorA.stop))
+            
         }
 
     }
