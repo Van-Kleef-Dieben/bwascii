@@ -4,7 +4,7 @@ s4 = (p) => {
 
     let glowTime = 50
     let flies = []
-    let r = 5
+    let r = 2
 
     function update() {
         flies.forEach(fly => {
@@ -23,6 +23,8 @@ s4 = (p) => {
 
             //neighbors.forEach(fly => { fly.timer += 1 })
 
+            let fill = p.color(basic._primary)
+
             switch (fly.status)
             {            
 
@@ -37,6 +39,11 @@ s4 = (p) => {
                                 continue;
                             }
 
+                            if (i === 0 && j === 0)
+                            {
+                                continue;
+                            }
+
                             let n = basic.dataGrid[fly.x + i][fly.y + j]
         
                             if (Object.keys(n).length === 0)
@@ -46,49 +53,67 @@ s4 = (p) => {
                                 
                             }
 
+                            let f = Math.sqrt(i * i + j * j)
+
+                            if (f > r) 
+                            {
+                                continue
+                            }
+
                             if (n.status === "off")
                             {
-                                let f = ((r - Math.sqrt(i * i + j * j)) * 50) | 0
-                                n.timer += f
-                                if (n.timer > n.maxTime - glowTime)
-                                {
-                                    n.timer = n.maxTime - glowTime
-                                }
+                                //let f = ((r - Math.sqrt(i * i + j * j)) * 300) | 0
+                                //console.log(Math.sqrt(i * i + j * j))
+                                // n.timer -= (f * 3) | 0
+                                // n.timer = p.max(0, n.timer)
+                                // if (n.timer < n.maxTime - glowTime)
+                                // {
+                                //     //n.timer += f
+                                //     //n.timer = n.maxTime - glowTime
+                                // }
+                                n.delta += (f * 10) | 0
                             }
                         }
                     }
 
-                    let fill = p.color(basic._primary)
-                    let alpha = 255 * p.sin((fly.timer - (fly.maxTime - glowTime)) / glowTime * p.PI) | 0
-                    fill.setAlpha(alpha)
-                    basic.dot(fly.x, fly.y, fly.letter, fill)
+                    let c = p.color("#FFD700")
+                    let g = p.color(basic._primary)
+
+                    fill = p.lerpColor(g, c, p.sin((fly.timer - (fly.maxTime - glowTime)) / glowTime * p.PI))
+                    
+                    let alpha = (256 - 30) * p.sin((fly.timer - (fly.maxTime - glowTime)) / glowTime * p.PI) | 0
+                    fill.setAlpha(30 + alpha)
+                  
 
                     break;
 
 
                 case "off":
-                    // fly.timer++;
-                    // if (fly.timer >= fly.maxTime) {
-                    //     fly.blinkTimer = 0;
-                    //     fly.status = "on"
-                    // }
+                    fill.setAlpha(30)
                     break;
 
             }
 
-            // if (fly.status === "on") {
-                
-            // }
-            // else
-            // {
-            //     //basic.dot(fly.x, fly.y, ".", "red")
-            // }
+            basic.dot(fly.x, fly.y, fly.letter, fill)
+
             
         })
 
         basic.clearDatagrid();
 
-        flies.forEach(fly => { basic.dataGrid[fly.x][fly.y] = fly })
+        flies.forEach(fly => { 
+            fly.delta = p.min(fly.delta, 5)
+
+            if (fly.timer > 0.6 * fly.maxTime)
+            {
+                fly.timer += fly.delta
+            }
+
+            
+            fly.delta = 0
+
+            basic.dataGrid[fly.x][fly.y] = fly 
+        })
 
     }
 
@@ -118,9 +143,10 @@ s4 = (p) => {
                         x: i, 
                         y: j, 
                         letter: "#", 
+                        delta: 0,
                        
-                        timer: p.random(300 - 1) | 0,
-                        maxTime: 300,
+                        timer: p.random(500 - 1) | 0,
+                        maxTime: 500,
                         
                         status: "off"
                     })
