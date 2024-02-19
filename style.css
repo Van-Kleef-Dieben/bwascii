@@ -9,11 +9,13 @@ body
 {
   background-color: white;
   transition: 0.3s all;
+  color: black;
 }
 
 body.dark
 {
   background-color: black;
+  color: white;
 }
 
 .container 
@@ -29,6 +31,10 @@ a {
   color : #888
 }
 
+a:hover {
+    text-decoration: underline;
+}
+
 a.active {
   text-decoration: underline;
   color: black
@@ -39,8 +45,8 @@ body.dark a.active
   color: white;
 }
 canvas {
-  display: block;
-  margin: 0 auto;
+  /* display: block;
+  margin: 0 auto; */
 }
 
 .sidebar {
@@ -54,6 +60,11 @@ ul li {
   list-style: none;
 }
 
+#settings {
+    position: absolute;
+    left: 800px;
+    top: 0;
+}
 
 .toggle {
   -webkit-appearance: none;
@@ -101,6 +112,12 @@ ul li {
 
 .toggle:checked:before {
   left: 32px;
+}
+
+#p5_loading {
+    opacity: 0;
+    /* display: none;
+    visibility: hidden; */
 }
 
 @media only screen and (min-width: 600px) {

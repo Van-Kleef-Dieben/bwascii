@@ -1,4 +1,5 @@
 let currentSketch;
+let currentSettings;
 
 let el = document.querySelector('.toggle');
 
@@ -22,12 +23,17 @@ for (const el of document.querySelectorAll("a.sketch"))
         document.querySelectorAll("a.sketch").forEach(e => e.classList.remove("active"))
         e.target.classList.add("active")
 
-        if (currentSketch) 
-        {
+        if (currentSketch) {
             currentSketch.remove();
+            currentSketch = null;
         }
-        
-        currentSketch = new p5(window[e.target.id]);
+
+        if (currentSettings) {
+            currentSettings.destroy();
+            currentSettings = null
+        }
+
+        currentSketch = new p5(window[e.target.id], document.querySelector(".container"));
     })
 }
 

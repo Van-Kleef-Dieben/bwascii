@@ -10,8 +10,6 @@ let sizeY;
 let screenX
 let screenY
 
-
-
 let frameCount = 0;
 
 let basic = {
@@ -211,9 +209,8 @@ let basic = {
             sizeX = (screenX / dX) | 0
             sizeY = (screenY / dY) | 0
 
-            this.p.createCanvas(screenX, screenY, document.querySelector("#canvas"))
+            this.p.createCanvas(screenX, screenY)
             this.setupGrid();
-
         },
 
         draw() 
@@ -261,8 +258,7 @@ let basic = {
 
             return this.p.lerpColor(this.p.color(colorA.color), this.p.color(colorB.color), ((value / max) - colorA.stop) / (colorB.stop - colorA.stop))
             
-        }
-
+        },
     }
 
 
