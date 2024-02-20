@@ -10,16 +10,17 @@ let sizeY;
 let screenX
 let screenY
 
-let frameCount = 0;
-
 let basic = {
 
         p: null,
 
         grid: [],
         dataGrid: [],
+        arrayGrid: [],
         _primary: "white",
+        _frameCount: 0,
         _showFramecount: false,
+        _nthFrameCallbacks: [],
 
         circle(x, y, r, callback, letter, fill) 
         {
@@ -82,7 +83,10 @@ let basic = {
                 index = this.p.random(string.length) | 0
             }
 
-           
+            if   (index > string.length -1)
+            {
+                throw new "ASDfasdf"
+            }
         
             index = this.p.max(0, this.p.min(string.length - 1, index))
             return string[index]
@@ -124,6 +128,19 @@ let basic = {
             }
         },
 
+        setupArraygrid()
+        {
+            for (let i = 0; i < sizeX; i++)
+            {
+                this.arrayGrid[i] = []
+                
+                for (let j = 0; j < sizeY; j++)
+                {
+                    this.arrayGrid[i][j] = []
+                }
+            }
+        },
+
         dataGridEmpty(x, y)
         {
             if (!this.dataGrid[x][y])
@@ -143,10 +160,17 @@ let basic = {
                     {
                         let o = callback(this.grid[i][j], i, j)
 
-                        if (o)
+                        if (typeof o === "object")
                         {
                             this.p.fill(o.fill)
                             this.p.text(o.letter || "", i * dX, j * dY)
+                        }
+
+                        if (typeof o === "string")
+                        {
+                            // this.p.fill(o.fill)
+                            this.p.fill(this._primary)
+                            this.p.text(o || "", i * dX, j * dY)
                         }
                     }
                     else 
@@ -166,19 +190,26 @@ let basic = {
                 {
                     if (callback !== null)
                     {
-                        this.dataGrid[i][j] = callback(this.dataGrid[i][j], i, j)
+                        callback(this.dataGrid[i][j], i, j)
                     }
                 }
             }
         },
 
-        clearDatagrid()
+        clearDatagrid(callback)
         {
             for (let i = 0; i < sizeX; i++) 
             {
                 for (let j = 0; j < sizeY; j++) 
                 {
-                    this.dataGrid[i][j] = {}
+                    if (typeof callback === "function")
+                    {
+                        this.dataGrid[i][j] = callback(this.dataGrid[i][j])
+                    }
+                    else 
+                    {
+                        this.dataGrid[i][j] = {}
+                    }
                 }
             }
         },
@@ -216,21 +247,35 @@ let basic = {
         draw() 
         {
             this.p.clear();
-            // clearGrid();
-            frameCount++
+            this._frameCount++
             this._primary = document.querySelector("body").classList.contains("dark") ? "white" : "black"
+
+            for (let nfc of this._nthFrameCallbacks) {
+                if (this._frameCount % nfc.count == 0) {
+                    nfc.callback();
+                }
+
+            }
         },
 
-        showFramecount(show = false)
-        {
+        showFramecount(show = false) {
             this._showFramecount = show;
+        },
+
+        getFramecount() {
+            return this._frameCount;
+        },
+        
+        everyNthFrame(count, callback)
+        {
+            this._nthFrameCallbacks.push({ count: count, callback: callback })
         },
 
         postDraw()
         {
             if (this._showFramecount) {
                 this.p.fill("red")
-                this.p.text("fps: " + frameCount, 10, 10)
+                this.p.text("fps: " + this._frameCount, 10, 10)
             }
         },
 

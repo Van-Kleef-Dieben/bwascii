@@ -2,7 +2,6 @@ s4 = (p) => {
 
     basic.p = p;
 
-    // let glowTime = 1000
     let flies = []
     let neighborRange = 4
     let mouseDisturbRange = 3;
