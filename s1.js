@@ -12,8 +12,7 @@ s1 = (p) =>
     let c = "#222"
     let o = false
     let vkdPeriod = 300
-    let lastVKDframeCount = vkdPeriod
-
+    
     function addDrop()
     {
         let x = p.random(sizeX) | 0
@@ -76,7 +75,7 @@ s1 = (p) =>
     {
         basic.draw()
 
-        if ((frameCount + (p.random(20) | 0)) % df === 0)
+        if ((basic.getFramecount() + (p.random(20) | 0)) % df === 0)
         {
             addDrop()
         }

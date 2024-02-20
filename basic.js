@@ -22,6 +22,16 @@ let basic = {
         _showFramecount: false,
         _nthFrameCallbacks: [],
 
+        setTheme(t)
+        {
+            console.log(theme, t)
+            if (theme === t) {
+                return;
+            }
+
+            document.querySelector('.toggle').click();
+        },
+
         circle(x, y, r, callback, letter, fill) 
         {
         
@@ -152,6 +162,7 @@ let basic = {
         
         drawGrid(callback = null) 
         {
+            this.p.textFont(font)
             for (let i = 0; i < sizeX; i++) 
             {
                 for (let j = 0; j < sizeY; j++) 
@@ -194,6 +205,20 @@ let basic = {
                     }
                 }
             }
+        },
+
+        reduceDataGrid(callback, acc) {
+
+
+            for (let i = 0; i < sizeX; i++) 
+            {
+                for (let j = 0; j < sizeY; j++) 
+                {
+                    acc = callback(this.dataGrid[i][j], acc)
+                }
+            } 
+
+            return acc;
         },
 
         clearDatagrid(callback)

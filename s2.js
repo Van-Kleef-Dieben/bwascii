@@ -152,7 +152,7 @@ s2 = (p) =>
 
         basic.clearGrid();
 
-        if (frameCount % interval === 0)
+        if (basic.getFramecount() % interval === 0)
         {
             updateWorm(worm)
         }

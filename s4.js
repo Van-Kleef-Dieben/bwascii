@@ -1,6 +1,8 @@
 s4 = (p) => {
 
     basic.p = p;
+    basic.setTheme("dark");
+
 
     let flies = []
     let neighborRange = 4

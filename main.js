@@ -1,16 +1,18 @@
 let currentSketch;
 let currentSettings;
 
+let theme = "dark"
+
 let el = document.querySelector('.toggle');
 
 el.onchange = function() {
     document.querySelector("body").classList.toggle('dark');
+    theme = theme === "light" ? "dark" : "light"
 }
 
 el = document.querySelector("#toggle-sidebar")
 el.onclick = () => {
     const sidebar = document.querySelector(".sidebar")
-    console.log(sidebar)
     sidebar.style.display = window.getComputedStyle(sidebar).display === "block" ? "none" : "block"
 }
 
