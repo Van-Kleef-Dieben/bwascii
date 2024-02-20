@@ -3,9 +3,9 @@ s5 = (p) => {
 
     basic.setTheme("light");
 
-    let maxParticles = 5000;
-    let maxMovement = 3.8;
-    let maxRange = 7.5;
+    let maxParticles = 4000;
+    let maxMovement = 20;
+    let maxRange = 10;
 
     let particles = []
     let chars = ".:=+x░▒▓█"    /* ▓ */
@@ -69,8 +69,8 @@ s5 = (p) => {
 
             if (showParticles) {
                 p.noStroke()
-                p.fill(0, 50)
-                p.circle(particle.x, particle.y, 3)
+                p.fill("brown")
+                p.circle(particle.x, particle.y, 2)
             }
 
             let hit = false;
@@ -240,6 +240,22 @@ s5 = (p) => {
 
     }
 
+    function randomize() {
+        maxParticles = p.random(15000)
+        currentSettings.setValue("max particles", maxParticles)
+
+        maxMovement = p.random(100)
+        currentSettings.setValue("max movement", maxMovement)
+
+        maxRange = p.random(60)
+        currentSettings.setValue("max range", maxRange)
+
+        // chars = basic.randomString((p.random(10) | 0) + 3, "~!@#$%^&*()_+=01234567890-\\/';:,.<>")
+        // currentSettings.setValue("chars", chars)
+
+        createParticles();
+    }
+
     p.setup = () => {
 
         basic.setup()
@@ -260,12 +276,14 @@ s5 = (p) => {
         
        
         currentSettings =  QuickSettings.create(0, 0, "settings", document.querySelector("#settings")).setDraggable(false);
+        currentSettings.addButton("🎲 randomize", randomize);                        // creates a button
         currentSettings.addRange("max particles", 0, 15000, maxParticles, 1, (v) => { maxParticles = v; createParticles() });
-        currentSettings.addRange("max movement", 0, 100, maxMovement, 0.1, (v) => { maxMovement = v });
-        currentSettings.addRange("max range", 0, 60, maxRange, 0.1, (v) => { maxRange = v });
+        currentSettings.addRange("max movement", 0, 100, maxMovement, 0.1, (v) => { maxMovement = v; createParticles() });
+        currentSettings.addRange("max range", 0, 60, maxRange, 0.1, (v) => { maxRange = v; createParticles(); });
         currentSettings.addText("chars", chars, (v) => { chars = v });
         currentSettings.addBoolean("show particles", showParticles, (v) => { showParticles = v });
         currentSettings.addBoolean("Gaussian randomness", gaussianMovement, (v) => { gaussianMovement = v });
+        
     }
 
     p.draw = () => {

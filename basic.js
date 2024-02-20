@@ -257,6 +257,7 @@ let basic = {
         {
             
             this.p.textFont(font)
+            this.p.textSize(fontSize)
             this.p.textAlign(this.p.LEFT, this.p.TOP)
 
             screenX = this.p.min(preferredWidth, this.p.displayWidth)
@@ -282,6 +283,7 @@ let basic = {
 
             }
         },
+    
 
         showFramecount(show = false) {
             this._showFramecount = show;
@@ -329,6 +331,17 @@ let basic = {
             return this.p.lerpColor(this.p.color(colorA.color), this.p.color(colorB.color), ((value / max) - colorA.stop) / (colorB.stop - colorA.stop))
             
         },
+
+        randomString(length, chars = "abcdefghijklmnopqrstuvwxyz0123456789") {
+
+            let result = ""
+
+            for (let i = 0; i < length; i++){
+                result += chars[(this.p.random(chars.length) | 0)]
+            }
+
+            return result;
+        }
     }
 
 
