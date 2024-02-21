@@ -86,7 +86,7 @@ s6 = (p) =>
         
         basic.addSettingsRandomize((property, setting) => { 
             if (property === "ASCII" && basic.getSetting("ASCII potential") != "") {
-                setting.value = basic.randomString(20, basic.getSetting("ASCII potential"))
+                setting.value = basic.randomString(p.max(1, p.random(20) | 0), basic.getSetting("ASCII potential"))
             }
         });
         basic.addSettingButton("clear canvas", () => { basic.clearDatagrid() })
