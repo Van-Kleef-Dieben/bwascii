@@ -82,10 +82,11 @@ s4 = (p) => {
                     // let g = p.color(basic._primary)
 
                     let mix = [
-                        { stop: 0.0, color: "grey" },
-                        { stop: 0.3, color: "gold" },
-                        { stop: 0.6, color: "yellow" },
-                        { stop: 0.9, color: basic._primary }
+                        "grey",
+                        
+                        "yellow",
+                        basic._primary,
+                        basic._primary
                     ]
 
                     fill = basic.mixColors(mix, p.sin((fly.timer - (maxTime - glowTime)) / glowTime * p.PI))
