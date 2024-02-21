@@ -22,8 +22,90 @@ let basic = {
         _showFramecount: false,
         _nthFrameCallbacks: [],
 
-        setTheme(t)
-        {
+        _settings: {},
+        _quickSettings: null,
+        _onSettingsChanged: null,
+
+        addSetting(property, type, value = null, min = null, max = null, step = null, randomize = false) {
+
+            if (this._quickSettings === null) {
+                this._quickSettings = QuickSettings.create(0, 0, "settings", document.querySelector("#settings")).setDraggable(false);
+            }
+
+            this._settings[property] = { type: type, value: value, min: min, max: max, step: step, randomize: randomize }
+
+            let callback = (v) => { 
+                this._settings[property].value = v; 
+                if (typeof this._onSettingsChanged === "function") {
+                    this._onSettingsChanged()
+                }
+            }
+
+            switch(type) 
+            {
+                case "range":    this._quickSettings.addRange(property, min, max, this._settings[property].value, step, callback); break;
+                case "boolean":  this._quickSettings.addBoolean(property, value ?? false, callback); break;
+                case "text":     this._quickSettings.addText(property, value ?? "", callback); break;
+            }
+            // this._quickSettings.add
+
+            // currentSettings =  QuickSettings.create(0, 0, "settings", document.querySelector("#settings")).setDraggable(false);
+            // currentSettings.addButton("🎲 randomize", randomize);                        // creates a button
+            // currentSettings.addRange("max particles", 0, 15000, maxParticles, 1, (v) => { maxParticles = v; createParticles() });
+            // currentSettings.addRange("max movement", 0, 100, maxMovement, 0.1, (v) => { maxMovement = v; createParticles() });
+            // currentSettings.addRange("max range", 0, 60, maxRange, 0.1, (v) => { maxRange = v; createParticles(); });
+            // currentSettings.addText("chars", chars, (v) => { chars = v });
+        },
+
+        addSettingButton(label, callback) {
+            if (this._quickSettings === null) {
+                this._quickSettings = QuickSettings.create(0, 0, "settings", document.querySelector("#settings")).setDraggable(false);
+            }
+
+            this._quickSettings.addButton(label, callback)
+        },
+
+        addSettingsRandomize(callback = null) {
+            
+            if (this._quickSettings === null) {
+                this._quickSettings = QuickSettings.create(0, 0, "settings", document.querySelector("#settings")).setDraggable(false);
+            }
+
+            this._quickSettings.addButton("🎲 randomize", () => {
+
+                for (let property in this._settings) {
+                    let setting = this._settings[property]
+                    if (!setting.randomize) {
+                        continue
+                    }
+
+                    switch (setting.type) {
+                        case "range":   setting.value = this.p.random(setting.min, setting.max); break;
+                        case "boolean": setting.value = this.p.random(2) > 1; break;
+                        case "text":    setting.value = this.randomString(20); break;
+                    }
+
+                    if (typeof callback === "function") {
+                        callback(property, setting)
+                    }
+
+                    this._quickSettings.setValue(property, setting.value);
+                }
+
+                
+            });
+
+        },
+
+        onSettingsChanged(callback) {
+            this._onSettingsChanged = callback
+        },
+
+        getSetting(property) {
+            return this._settings[property].value
+        },
+
+        setTheme(t) {
             console.log(theme, t)
             if (theme === t) {
                 return;
@@ -66,18 +148,27 @@ let basic = {
         
         dot(x, y, letter, fill = null) 
         {
-            if (x < 0 || x >= sizeX)
-            {
-                return;
-            }
-        
-            if (y < 0 || y >= sizeY)
-            {
+            if (!this.inGrid(x, y)) {
                 return;
             }
         
             this.grid[x][y].letter = letter,
             this.grid[x][y].fill = fill ?? this._primary 
+            
+        },
+
+        dot_direct(x, y, letter, fill = null) 
+        {
+
+            if (!this.inGrid(x, y)) {
+                return;
+            }
+        
+            // this.grid[x][y].letter = letter,
+            //this.grid[x][y].fill = fill ?? this._primary 
+
+            this.p.fill(fill ?? this._primary)
+            this.p.text(letter || "", x * dX, y * dY)
             
         },
         
@@ -93,9 +184,9 @@ let basic = {
                 index = this.p.random(string.length) | 0
             }
 
-            if   (index > string.length -1)
+            if (index > string.length -1)
             {
-                throw new "ASDfasdf"
+                //throw new "ASDfasdf"
             }
         
             index = this.p.max(0, this.p.min(string.length - 1, index))
@@ -159,6 +250,25 @@ let basic = {
             }
             return Object.keys(this.dataGrid[x][y]).length === 0
         },
+
+        drawDataGrid(callback) 
+        {
+            this.p.textFont(font)
+            for (let i = 0; i < sizeX; i++) 
+            {
+                for (let j = 0; j < sizeY; j++) 
+                {
+                    let o = callback(this.dataGrid[i][j], i, j);
+
+                    if (!o) {
+                        continue;
+                    }
+
+                    this.p.fill(o.fill ?? this._primary)
+                    this.p.text(o.letter || "", i * dX, j * dY)
+                }
+            }
+        },
         
         drawGrid(callback = null) 
         {
@@ -209,6 +319,13 @@ let basic = {
 
         reduceDataGrid(callback, acc) {
 
+            if (typeof callback === "object") {
+
+                switch(callback.method) {
+                    case "max": return this.reduceDataGrid((o, a) => { return this.p.max(o[callback.property], a) } , 0);
+                }
+
+            }
 
             for (let i = 0; i < sizeX; i++) 
             {
@@ -270,9 +387,11 @@ let basic = {
             this.setupGrid();
         },
 
-        draw() 
+        draw(clear = true) 
         {
-            this.p.clear();
+            if (clear) {
+                this.p.clear();
+            }
             this._frameCount++
             this._primary = document.querySelector("body").classList.contains("dark") ? "white" : "black"
 
