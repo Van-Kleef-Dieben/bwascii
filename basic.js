@@ -36,25 +36,47 @@ let basic = {
             this._settings[property] = { type: type, value: value, min: min, max: max, step: step, randomize: randomize, options: type === "dropdown" ? value : null }
 
             let callback = (v) => { 
-                this._settings[property].value = v; 
+                // this._settings[property].value = v; 
 
-                if (this._settings[property].type === "dropdown") {
-                    this._settings[property].value = v.value; 
-                }
+                // if (this._settings[property].type === "dropdown") {
+                //     this._settings[property].value = v.value; 
+                // }
 
-                if (typeof this._onSettingsChanged === "function") {
-                    this._onSettingsChanged(property, this._settings[property])
-                }
+                // if (typeof this._onSettingsChanged === "function") {
+                //     this._onSettingsChanged(property, this._settings[property])
+                // }
+
+                this.setSetting(property, v, false)
             }
 
             switch(type) 
             {
-                case "range":    this._quickSettings.addRange(property, min, max, this._settings[property].value, step, callback); break;
-                case "boolean":  this._quickSettings.addBoolean(property, value ?? false, callback); break;
-                case "text":     this._quickSettings.addText(property, value ?? "", callback); break;
-                case "dropdown": this._quickSettings.addDropDown(property, value, callback); break;
+                case "range":       this._quickSettings.addRange(property, min, max, this._settings[property].value, step, callback); break;
+                case "boolean":     this._quickSettings.addBoolean(property, value ?? false, callback); break;
+                case "text":        this._quickSettings.addText(property, value ?? "", callback); break;
+                case "dropdown":    this._quickSettings.addDropDown(property, value, callback); break;
+                case "color":       this._quickSettings.addColor(property, value, callback); break;
             }
           
+        },
+
+        setSetting(property, value, setQuickSettings = true) {
+            let setting = this._settings[property]
+
+            setting.value = value;
+
+            if (this._settings[property].type === "dropdown" && !setQuickSettings) {
+                this._settings[property].value = value.value; 
+            }
+
+            if (setQuickSettings) {
+                this._quickSettings.setValue(property, setting.type === "dropdown" ? setting.options.indexOf(setting.value): setting.value);
+            }
+
+            if (typeof this._onSettingsChanged === "function") {
+                this._onSettingsChanged(property, setting)
+            }
+
         },
 
         randomPalette() {
@@ -83,20 +105,27 @@ let basic = {
                         continue
                     }
 
+                    let randomValue;
+
                     switch (setting.type) {
-                        case "range":       setting.value = this.p.random(setting.min, setting.max); break;
-                        case "boolean":     setting.value = this.p.random(2) > 1; break;
-                        case "text":        setting.value = this.randomString(20); break;
-                        case "dropdown":    setting.value = this.p.random(setting.options); break;
+                        case "range":       randomValue = this.p.random(setting.min, setting.max); break;
+                        case "boolean":     randomValue = this.p.random(2) > 1; break;
+                        case "text":        randomValue = this.randomString(20); break;
+                        case "dropdown":    randomValue = this.p.random(setting.options); break;
+
+                        // default:
+                        //                     setting.value = 
                     }
 
-                    if (typeof callback === "function") {
-                        callback(property, setting)
-                    }
-
-                    this._quickSettings.setValue(property, setting.type === "dropdown" ? setting.options.indexOf(setting.value): setting.value);
+                    this.setSetting(property, randomValue);
+                    
                 }
 
+                if (typeof callback === "function") {
+                    callback(this._settings)
+                }
+
+                
                 
             });
 
