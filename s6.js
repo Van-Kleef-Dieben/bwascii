@@ -20,14 +20,14 @@ s6 = (p) =>
         let iterations = basic.getSetting("iterations")
         let step = basic.getSetting("step")
         let fade = basic.getSetting("fade")
-        let xy_ratio = basic.getSetting("x/y ratio")
+        let x_ratio = basic.getSetting("X ratio")
+        let y_ratio = basic.getSetting("Y ratio")
         let ink = 1; //basic.getSetting("ink")
         let opacity = basic.getSetting("opacity")
         let ascii = basic.getSetting("ASCII")
         let maxCutoff = basic.getSetting("max cutoff")
         let oscillateSpeed = basic.getSetting("oscillate speed")
         let colors = basic.getSetting("colors")
-        let palette = basic.getSetting("palette")
 
         let color1 = basic.getSetting("color 1")
         let color2 = basic.getSetting("color 2")
@@ -55,8 +55,8 @@ s6 = (p) =>
                 a += step;
                 b += step * (r0 / r1)
             
-                let x1 = (sizeX / 2 + xy_ratio * (r0 - r1) * p.cos(a))
-                let y1 = (sizeY / 2 + (r0 - r1) * p.sin(a))
+                let x1 = (sizeX / 2 + x_ratio * (r0 - r1) * p.cos(a))
+                let y1 = (sizeY / 2 + y_ratio * (r0 - r1) * p.sin(a))
                 
                 let x2 = (x1 + (r2 * p.cos(b))) | 0
                 let y2 = (y1 + (r2 * p.sin(b))) | 0
@@ -134,15 +134,12 @@ s6 = (p) =>
         // basic.addSetting("ink", "range", 5, 0, 100, 1, true)
         basic.addSetting("max cutoff", "range", 1, 0.01, 1, 0.01 );
 
-       
-
-        
-
-        basic.addSetting("x/y ratio", "range", 1, 0.1, 2, 0.1, true);
+        basic.addSetting("X ratio", "range", 1, 0.1, 2, 0.1, true);
+        basic.addSetting("Y ratio", "range", 1, 0.1, 2, 0.1, true);
         basic.addSetting("opacity", "boolean", true, null, null, null, true);
         
-        basic.addSetting("ASCII", "text", "012345689" , null, null, null, true);
-        basic.addSetting("ASCII potential", "text", ".-+xo░▒▓████~!@#$%^&*()_=/><:';");
+        basic.addSetting("ASCII", "text", "Van Kleef - Dieben" , null, null, null, true);
+        basic.addSetting("ASCII potential", "text", "Van Kleef - Dieben");
 
         basic.addSetting("colors", "boolean", true, null, null, null, true);
 
