@@ -493,6 +493,50 @@ let basic = {
             }
 
             return result;
+        },
+
+        /*
+
+            bitmask values:
+
+
+        */ 
+
+        createBitMasks(property) {
+
+            for (let i = 0; i < sizeX; i++) {
+                for (let j = 0; j < sizeY; j++) {
+
+                    this.dataGrid[i][j].mask = 0
+
+                    let f = -1
+ 
+                    for (let l = -1; l <=1; l++) {
+                        for (let k = -1; k <=1; k++) {
+
+                            if (k == 0 && l == 0) {
+                                continue
+                            }
+
+                            f++
+
+                            if (!this.inGrid(i + k, j + l)) {
+                                continue;
+                            }
+                            
+                            // if (typeof property === "function") {
+                            //     this.dataGrid[i][j].mask |= (1 << f && property(this.dataGrid[i + k][j + l]))
+                            // } else 
+                            
+                            {
+                                if (this.dataGrid[i + k][j + l][property]) {
+                                    this.dataGrid[i][j].mask |= 1 << f
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
