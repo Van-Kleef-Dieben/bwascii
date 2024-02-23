@@ -56,6 +56,7 @@ let basic = {
                 case "text":        this._quickSettings.addText(property, value ?? "", callback); break;
                 case "dropdown":    this._quickSettings.addDropDown(property, value, callback); break;
                 case "color":       this._quickSettings.addColor(property, value, callback); break;
+                case "button":      this._quickSettings.addButton(property, value, min); break;
             }
           
         },
@@ -345,7 +346,11 @@ let basic = {
                 {
                     if (callback !== null)
                     {
-                        callback(this.dataGrid[i][j], i, j)
+                        let o = callback(this.dataGrid[i][j], i, j)
+
+                        if (o) {
+                            this.dataGrid[i][j] = o;
+                        }
                     }
                 }
             }
@@ -535,8 +540,28 @@ let basic = {
 
             for (let i = 0; i < sizeX; i++) {
                 for (let j = 0; j < sizeY; j++) {
+                    this.calculateBitMask(property, i, j);
+                    
+                }
+            }
+        },
 
-                    this.dataGrid[i][j].mask = 0
+        updateBitMask(property, x, y) {
+
+            for (let i = -1; i < 2; i++) {
+                for (let j = -1; j < 2; j++) {
+                    this.calculateBitMask(property, x + i, x + j);                    
+                }
+            }
+        },
+
+        calculateBitMask(property, x, y) {
+
+            if (!this.inGrid(x, y)) {
+                return;
+            }
+
+            this.dataGrid[x][y].mask = 0
 
                     let f = -1
  
@@ -549,23 +574,16 @@ let basic = {
 
                             f++
 
-                            if (!this.inGrid(i + k, j + l)) {
+                            if (!this.inGrid(x + k, y + l)) {
                                 continue;
                             }
-                            
-                            // if (typeof property === "function") {
-                            //     this.dataGrid[i][j].mask |= (1 << f && property(this.dataGrid[i + k][j + l]))
-                            // } else 
-                            
-                            {
-                                if (this.dataGrid[i + k][j + l][property]) {
-                                    this.dataGrid[i][j].mask |= 1 << f
-                                }
+                                               
+                            if (this.dataGrid[x + k][y + l][property]) { // truthy evaluation
+                                this.dataGrid[x][y].mask |= 1 << f
                             }
+                            
                         }
                     }
-                }
-            }
         }
     }
 
