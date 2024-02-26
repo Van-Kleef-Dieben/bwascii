@@ -1,9 +1,15 @@
 s7 = (p) =>
 {
 
-    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]
-
     basic.p = p
+
+    function getDirections() {
+        if (basic.getSetting("tree mode")) {
+            return [[1, 0], [-1, 0], [0, -1]]
+        } else {
+            return [[-1, 0], [1, 0], [0, -1], [0, 1]]
+        }
+    }
 
     p.draw = () => 
     {
@@ -68,26 +74,37 @@ s7 = (p) =>
     function createHead(x, y, direction, parent) {
 
         if (!direction) {
-            direction = p.random(directions)
+            direction = p.random(getDirections())
         }
         return { x: x, y: y, direction: direction, dead: false }
     }
 
     function attemptNewHead(head) {
 
-        for (let d of directions) {
+        // @todo: verbeteren met shuffled array
+        let attempts = 0;
+
+        while (true) {
+
+            attempts++ 
+            if (attempts > 100 ) {
+                break;
+            }
+
+            let d = p.random(getDirections())
+            
             if (d === head.direction) {
                 continue;
             }
-
+    
             if (!canGrow(head, d)) {
                 continue;
             }
-
+    
             let newHead = createHead(head.x, head.y, d)
-
+    
             grow(newHead, d)
-
+    
             return newHead
         }
     }
@@ -129,6 +146,11 @@ s7 = (p) =>
     }
 
     function kill(x, y) {
+
+        if (!basic.inGrid(x, y)) {
+            return;
+        }
+      
         let nodes = [{ x: x, y: y }];
 
         while (nodes.length !== 0) {
@@ -161,7 +183,7 @@ s7 = (p) =>
             let direction = head.direction
 
             if (p.random() > (1 - changeDirectionProbability)) {
-                head.direction = p.random(directions)
+                head.direction = p.random(getDirections())
             }
 
             if (p.random() > (1 - branchProbability)) {
@@ -176,7 +198,7 @@ s7 = (p) =>
                 continue;
             }
 
-            let ds = [...directions]
+            let ds = [...getDirections()]
 
             while (true) {
 
@@ -217,7 +239,8 @@ s7 = (p) =>
     function reset() {
         basic.updateDatagrid(resetDatagrid)
         heads = []
-        heads.push(createHead(sizeX /2  | 0, sizeY / 2 | 0));
+        
+        heads.push(createHead(sizeX /2  | 0, basic.getSetting("tree mode") ? (sizeY - 1): sizeY / 2 | 0, basic.getSetting("tree mode") ? [0, -1] : null));
     }
 
     function resetDatagrid() {
@@ -251,7 +274,7 @@ s7 = (p) =>
                 continue;
             }
 
-            let d = p.random(directions);
+            let d = p.random(getDirections());
 
             let head = attemptNewHead({ x: x, y: y, direction: d})
 
@@ -265,7 +288,11 @@ s7 = (p) =>
     }
 
     p.mouseClicked = () => {
-        console.log("click");
+
+        if (p.mouseX !== p.constrain(p.mouseX, 0, 800) || p.mouseY !== p.constrain(p.mouseY, 0, 800)) {
+            return;
+        }
+        
         let x = (p.mouseX / dX) | 0
         let y = (p.mouseY / dY) | 0
         kill(x, y)
@@ -276,7 +303,7 @@ s7 = (p) =>
         basic.setup() 
 
         
-        reset();
+      
 
         basic.everyNthFrame(1, update)
 
@@ -287,8 +314,9 @@ s7 = (p) =>
 
         basic.addSetting("branch probability", "range", 0.01, 0, 0.2, 0.001, true); 
         basic.addSetting("change direction probability", "range", 0.01, 0, 1, 0.001, true); 
+        basic.addSetting("tree mode", "boolean", false, null, null, null, true); 
         
-
+        reset();
 
         basic.updateDatagrid((o) => { o.road = 0  } )
         
