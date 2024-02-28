@@ -99,7 +99,7 @@ let basic = {
                     let randomValue;
 
                     switch (setting.type) {
-                        case "range":       randomValue = this.p.random(setting.min, setting.max); break;
+                        case "range":       randomValue = this.p.random(setting.min, setting.max); randomValue = Math.round(randomValue / setting.step) * setting.step; break;
                         case "boolean":     randomValue = this.p.random(2) > 1; break;
                         case "text":        randomValue = this.randomString(20); break;
                         case "dropdown":    randomValue = this.p.random(setting.options); break;
@@ -415,6 +415,7 @@ let basic = {
             this._quickSettings = null;
             this._onSettingsChanged = null;
             
+           
             this.p.textFont(font)
             this.p.textSize(fontSize)
             this.p.textAlign(this.p.LEFT, this.p.TOP)
@@ -425,14 +426,18 @@ let basic = {
             sizeX = (screenX / dX) | 0
             sizeY = (screenY / dY) | 0
 
-
-
             this.p.createCanvas(screenX, screenY)
             this.setupGrid();
+
+            this._setupDone = true;
         },
 
         draw(clear = true) 
         {
+            if (!this._setupDone) {
+                throw "VKD *** basic.draw called but basic.setup not run"
+            }
+
             if (clear) {
                 this.p.clear();
             }
@@ -583,6 +588,15 @@ let basic = {
                             
                         }
                     }
+        },
+
+        createLink(script, name) {
+            let a = document.createElement("a")
+            a.href ="#"
+            a.classList.add("sketch")
+            a.id = script;
+            a.innerHTML = name;
+            document.querySelector("ul#links").append(a)
         }
     }
 
