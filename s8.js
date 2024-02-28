@@ -62,7 +62,7 @@ s8 = (p) =>
 
                             s++
 
-                            if ((i + j) % size === 0 || (i - j ) % size === 0) {
+                            if ((((i + j) % size) | 0) === 0 || (((i - j ) % size) | 0) === 0) {
                                 switch(char_mode) {
                                     case "modulo_X": basic.dot(i, j, basic.getchar(cs, i % cs.length), fillz); break;
                                     case "modulo_Y": basic.dot(i, j, basic.getchar(cs, j % cs.length), fillz); break;
@@ -91,7 +91,40 @@ s8 = (p) =>
 
                             s++;
 
-                            if (i % size === 0 || j % size === 0) {
+                            if (((i % size)  | 0)=== 0 || ((j % size) | 0) === 0) {
+                                switch(char_mode) {
+                                    case "modulo_X": basic.dot(i, j, basic.getchar(cs, i % cs.length), fillz); break;
+                                    case "modulo_Y": basic.dot(i, j, basic.getchar(cs, j % cs.length), fillz); break;
+                                    case "modulo_XY": basic.dot(i, j, basic.getchar(cs, (i + j) % cs.length), fillz); break;
+                                    case "modulo_i": basic.dot(i, j, basic.getchar(cs, s % cs.length), fillz); break;
+                                    default: basic.dot(i, j, "."); break;
+                                }
+                            }
+                        }
+                    }
+
+                    break;
+
+                case "circle":
+
+                    // let square_size = (p.random(10) | 0) + 2
+                    s = 0;
+                   
+                    for (let j = 0; j < sizeY; j++) {
+
+                        if (c) {
+                            fillz = j % 2 === 0 ? "red" : basic._primary
+                        }
+
+                        for (let i = 0; i < sizeX; i++) {
+
+                            s++;
+
+                            let _i =  (i % (2 * size)) - size;
+                            let _j =  (j % (2 * size)) - size;
+
+
+                            if (p.abs(_i * _i + _j * _j  - size * size) <= 10) {
                                 switch(char_mode) {
                                     case "modulo_X": basic.dot(i, j, basic.getchar(cs, i % cs.length), fillz); break;
                                     case "modulo_Y": basic.dot(i, j, basic.getchar(cs, j % cs.length), fillz); break;
@@ -137,8 +170,8 @@ s8 = (p) =>
            
         });
 
-        basic.addSetting("size", "range", 4, 2, 20, 1, true)
-        basic.addSetting("mode", "dropdown", ["none", "square", "diamond"], null, null, null, true);
+        basic.addSetting("size", "range", 4, 2, 20, 0.1, true)
+        basic.addSetting("mode", "dropdown", ["none", "square", "diamond", "circle"], null, null, null, true);
         basic.addSetting("char mode", "dropdown", ["none", "modulo_X", "modulo_Y", "modulo_XY", "modulo_i"], null, null, null, true);
 
 
