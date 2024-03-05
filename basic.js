@@ -591,12 +591,15 @@ let basic = {
         },
 
         createLink(script, name) {
+            let li = document.createElement("li")
             let a = document.createElement("a")
+
+            li.append(a)
             a.href ="#"
             a.classList.add("sketch")
             a.id = script;
             a.innerHTML = name;
-            document.querySelector("ul#links").append(a)
+            document.querySelector("ul#links").append(li)
         }
     }
 
