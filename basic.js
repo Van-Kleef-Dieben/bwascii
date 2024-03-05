@@ -17,35 +17,25 @@ let basic = {
 
       
 
-        addSetting(property, type, value = null, min = null, max = null, step = null, randomize = false) {
+        addSetting(property, type, value = null, min = null, max = null, step = null, randomize = false, callback) {
 
             if (this._quickSettings === null) {
                 this._quickSettings = QuickSettings.create(0, 0, "settings", document.querySelector("#settings")).setDraggable(false);
             }
 
-            this._settings[property] = { type: type, value: value, min: min, max: max, step: step, randomize: randomize, options: type === "dropdown" ? value : null }
+            this._settings[property] = { type: type, value: value, min: min, max: max, step: step, randomize: randomize, options: type === "dropdown" ? value : null, callback: callback }
 
-            let callback = (v) => { 
-                // this._settings[property].value = v; 
-
-                // if (this._settings[property].type === "dropdown") {
-                //     this._settings[property].value = v.value; 
-                // }
-
-                // if (typeof this._onSettingsChanged === "function") {
-                //     this._onSettingsChanged(property, this._settings[property])
-                // }
-
+            let _callback = (v) => { 
                 this.setSetting(property, v, false)
             }
 
             switch(type) 
             {
-                case "range":       this._quickSettings.addRange(property, min, max, this._settings[property].value, step, callback); break;
-                case "boolean":     this._quickSettings.addBoolean(property, value ?? false, callback); break;
-                case "text":        this._quickSettings.addText(property, value ?? "", callback); break;
-                case "dropdown":    this._quickSettings.addDropDown(property, value, callback); break;
-                case "color":       this._quickSettings.addColor(property, value, callback); break;
+                case "range":       this._quickSettings.addRange(property, min, max, this._settings[property].value, step, _callback); break;
+                case "boolean":     this._quickSettings.addBoolean(property, value ?? false, _callback); break;
+                case "text":        this._quickSettings.addText(property, value ?? "", _callback); break;
+                case "dropdown":    this._quickSettings.addDropDown(property, value, _callback); break;
+                case "color":       this._quickSettings.addColor(property, value, _callback); break;
                 case "button":      this._quickSettings.addButton(property, value, min); break;
             }
           
@@ -68,6 +58,10 @@ let basic = {
                 this._onSettingsChanged(property, setting)
             }
 
+            if (typeof this._settings[property].callback === "function") {
+                this._settings[property].callback(setting)
+            }
+
         },
 
         randomPalette() {
@@ -80,6 +74,12 @@ let basic = {
             }
 
             this._quickSettings.addButton(label, callback)
+        },
+
+        randomize(properties) {
+            for (let property of properties) {
+                this._settings[property].randomize = true;
+            }
         },
 
         addSettingsRandomize(callback = null) {
