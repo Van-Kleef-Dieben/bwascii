@@ -17,8 +17,9 @@ s9 = (p) =>
 
     let filter = new p5.LowPass();
     let delay = new p5.Delay();
-    let useDelay;
-    let useFilter;
+    let distortion = new p5.Distortion();
+    let reverb = new p5.Reverb();
+
 
     let sm_a_word = null
     let sm_a_timestamp = null
@@ -45,6 +46,103 @@ s9 = (p) =>
     let sm_a = new StateMachine(settings);
     let sm_b = new StateMachine(settings);
 
+    function setupEffects() {
+
+        let useFilter = basic.getSetting("use filter")
+        let filterType = basic.getSetting("filter type")
+        let filterFrequency = basic.getSetting("filter freq")
+        let filterR = basic.getSetting("filter R")
+
+
+        filter.disconnect();
+
+        let useDelay = basic.getSetting("use delay")
+        let delayTime = basic.getSetting("delay time")
+        let delayFeedback = basic.getSetting("delay feedback")
+        let delayFreq = basic.getSetting("delay freq")
+
+        delay.disconnect();
+        
+
+        let useDistortion = basic.getSetting("use distortion")
+        let distortionAmount = basic.getSetting("distortion amount")
+      
+        distortion.disconnect();
+
+
+        let useReverb = basic.getSetting("use reverb")
+        let reverbTime = basic.getSetting("reverb time")
+        let reverbDecay = basic.getSetting("reverb decay")
+        let reverbDryWet = basic.getSetting("reverb dry/wet")
+
+        reverb.disconnect()
+
+        let effect = osc;
+
+        osc.disconnect()
+        
+        
+        if (useFilter) {
+           
+
+            filter.setType(filterType)
+            filter.freq(filterFrequency)
+            filter.res(filterR)
+            effect.connect(filter)
+            effect = filter;
+            
+        }
+
+        if (useDelay) {
+            effect.connect(delay)
+            delay.delayTime(delayTime)
+            delay.feedback(delayFeedback)
+            delay.filter(delayFreq)
+            delay.disconnect();
+            effect = delay
+           
+                       
+            //delay.process(osc, delayFreq)
+        }
+
+        if (useDistortion) {
+            effect.connect(distortion)
+            distortion.set(distortionAmount)
+            effect = distortion
+           
+                       
+            //delay.process(osc, delayFreq)
+        }
+
+        if (useReverb) {
+            effect.connect(reverb)
+            reverb.set(reverbTime, reverbDecay)
+            reverb.drywet(reverbDryWet)
+            effect = reverb
+           
+                       
+            //delay.process(osc, delayFreq)
+        }
+
+        effect.connect()
+        
+
+        // filter.freq(filterFrequency)
+        // filter.res(filterR);
+        
+
+
+
+        // 
+
+        // if (useDelay) {
+        //     delay.connect()
+            
+        // }  else {
+        //     delay.disconnect()
+        // }
+    }
+
     function updateWord() {
 
         let slowdown = basic.getSetting("slow down");
@@ -55,26 +153,12 @@ s9 = (p) =>
         let lengthMultiplier = basic.getSetting("length multiplier")
         let rampTime = basic.getSetting("Ramp between fqs");
 
-        if (useFilter !== basic.getSetting("use filter")) {
-            useFilter = basic.getSetting("use filter");
-            filter.toggle();
-        }
-
+        
         // if (useDelay !== basic.getSetting("use delay")) {
         //     useDelay = basic.getSetting("use delay")
         // }
 
-        let useDelay = basic.getSetting("use delay")
 
-        let filterFrequency = basic.getSetting("filter freq")
-        let filterR = basic.getSetting("filter R")
-
-        let delayTime = basic.getSetting("delay time")
-        let delayFeedback = basic.getSetting("delay feedback")
-        let delayFreq = basic.getSetting("delay freq")
-
-        filter.freq(filterFrequency)
-        filter.res(filterR);
 
         let a = basic.getSetting("A")
         let d = basic.getSetting("D")
@@ -120,14 +204,7 @@ s9 = (p) =>
                     sm_a_timestamp = new Date().getTime() + (t * 1000 * lengthMultiplier | 0  )
                 }
 
-                delay.process(osc, delayTime, delayFeedback, delayFreq)
-
-                if (useDelay) {
-                    delay.connect()
-                    
-                }  else {
-                    delay.disconnect()
-                }
+               
 
                 envelope.play()
             } else {
@@ -194,7 +271,6 @@ s9 = (p) =>
 
     envelope = new p5.Env();
     envelope.setADSR(0.1, 0.3, 0.3, 0.5);
-    osc.connect(filter)
     osc.start();
     osc.freq(200)
     osc.amp(envelope)
@@ -253,42 +329,42 @@ s9 = (p) =>
                     osc.stop();
                     osc = new p5.SinOsc(); 
                     osc.amp(envelope)
-                    osc.connect(filter)
+                    setupEffects();
                     osc.start()
                     break;
                 case "square": 
                     osc.stop();
                     osc = new p5.SqrOsc(); 
                     osc.amp(envelope)
-                    osc.connect(filter)
+                    setupEffects();
                     osc.start()
                     break;
                 case "triangle": 
                     osc.stop();
                     osc = new p5.TriOsc(); 
                     osc.amp(envelope)
-                    osc.connect(filter)
+                    setupEffects();
                     osc.start()
                     break;
                 case "saw": 
                     osc.stop();
                     osc = new p5.SawOsc(); 
                     osc.amp(envelope)
-                    osc.connect(filter)
+            setupEffects();
                     osc.start()
                     break;
                 case "noise": 
                     osc.stop();
                     osc = new p5.Noise(); 
                     osc.amp(envelope)
-                    osc.connect(filter)
+                    setupEffects();
                     osc.start()
                     break;
                 case "pwm": 
                     osc.stop();
                     osc = new p5.Pulse(); 
                     osc.amp(envelope)
-                    osc.connect(filter)
+                    setupEffects();
                     osc.start()
                     break;
             }
@@ -303,16 +379,25 @@ s9 = (p) =>
 
         basic.addSetting("Ramp between fqs", "range", 0.0, 0.0, 1, 0.001, true);
 
-        basic.addSetting("use filter", "boolean", false);
+        basic.addSetting("use filter", "boolean", false, null, null, null, true, setupEffects);
+        basic.addSetting("filter type", "dropdown", ["lowpass", "highpass", "bandpass"], null, null, null, true, setupEffects);
         basic.addSetting("filter freq", "range", 200, 30, 2000, 1, true)
         basic.addSetting("filter R", "range", 1, 0, 50, 1, true)
 
-        basic.addSetting("use delay", "boolean", false)
+        basic.addSetting("use delay", "boolean", false, null, null, null, true, setupEffects);
         basic.addSetting("delay time", "range", 0, 0, 1, 0.001, true)
         basic.addSetting("delay feedback", "range", 0, 0, 1, 0.001, true)
         basic.addSetting("delay freq", "range", 0, 0, 1000, 0.001, true)
+
+        basic.addSetting("use distortion", "boolean", false, null, null, null, true, setupEffects);
+        basic.addSetting("distortion amount", "range", 0, 0, 1, 0.001, true, setupEffects)
+
+        basic.addSetting("use reverb", "boolean", false, null, null, null, true, setupEffects);
+        basic.addSetting("reverb time", "range", 0, 0, 10, 0.001, true, setupEffects)
+        basic.addSetting("reverb decay", "range", 0, 0, 100, 1, true, setupEffects)
+        basic.addSetting("reverb dry/wet", "range", 0, 0, 1, 0.001, true, setupEffects)
         
-        basic.randomize(["slow down", "base pitch", "pitch change", "length multiplier", "oscillator" ])
+        //basic.randomize(["slow down", "base pitch", "pitch change", "length multiplier", "oscillator" ])
 
     }
 }
