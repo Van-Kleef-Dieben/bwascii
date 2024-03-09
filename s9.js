@@ -11,7 +11,11 @@ s9 = (p) =>
         '.--',
         '.---',
         '.--.-..',
-        '--.-.-.'
+        '--.-.-.',
+        '.-',
+        "--.--",
+        '..'
+
 
     ]
 
@@ -24,6 +28,8 @@ s9 = (p) =>
     let sm_a_word = null
     let sm_a_timestamp = null
     let sm_a_word_index = null
+
+    let light = 0;
 
     let settings = {
         init: 'neutral',
@@ -166,9 +172,7 @@ s9 = (p) =>
         let r = basic.getSetting("R")
 
         let t = a + d + s + r + (slowdown / 1000)
-        
 
-        
         if (!sm_a_word) {
             return;
         }
@@ -205,6 +209,8 @@ s9 = (p) =>
                 }
 
                
+
+                light = 255;
 
                 envelope.play()
             } else {
@@ -281,13 +287,24 @@ s9 = (p) =>
     {
         basic.draw();
 
+        let ligthDim = basic.getSetting("light dim")
+
+        light -= ligthDim
+        light = p.max(0, light)
+
         p.fill(basic._primary)
         p.textFont(font)
 
+        p.fill(light)
+
+        
+        p.rect(0, 0, p.width/2, p.height)
       
         updateStateMachine(sm_a, sm_b)
         updateStateMachine(sm_b, sm_a)
         
+        p.fill(p.abs(255 - light))
+
         p.text(sm_a.state, p.width / 4 * 1, p.height / 2)
         p.text(sm_b.state, p.width / 4 * 3, p.height / 2)
 
@@ -298,12 +315,12 @@ s9 = (p) =>
             let s = "|   " + sm_a_word.substring(0, sm_a_word_index + 1) + " ".repeat( l - sm_a_word_index - 10) + "|"
             let tt = 20
 
-            p.text("÷" + "-". repeat(l - 6) + "÷", p.width / 4 * 1, p.height / 2 - 6 * tt - 40)
-            p.text("|" + " ".repeat(l - 6) + "|", p.width / 4 * 1, p.height / 2 - 5 * tt - 40)
-            p.text(s, p.width / 4 * 1, p.height / 2 - 4 * tt - 40)
-            p.text("|" + " ".repeat(l - 6) + "|", p.width / 4 * 1, p.height / 2 - 3 * tt - 40)
-            p.text("÷" + "-". repeat(l - 6) + "÷", p.width / 4 * 1, p.height / 2 - 2 * tt - 40)
-            p.text("  V ", p.width / 4 * 1, p.height / 2 - tt - 40)
+            p.text("÷" + "-". repeat(l - 6) + "÷",                                      p.width / 4 * 1 - 50, p.height / 2 - 6 * tt - 40)
+            p.text("|" + " ".repeat(l - 6) + "|",                                       p.width / 4 * 1 - 50, p.height / 2 - 5 * tt - 40)
+            p.text(s,                                                                   p.width / 4 * 1 - 50, p.height / 2 - 4 * tt - 40)
+            p.text("|" + " ".repeat(l - 6) + "|",                                       p.width / 4 * 1 - 50, p.height / 2 - 3 * tt - 40)
+            p.text("÷" + "-". repeat(l - 6) + "÷",                                      p.width / 4 * 1 - 50, p.height / 2 - 2 * tt - 40)
+            p.text("  V ",                                                              p.width / 4 * 1 - 50, p.height / 2 - tt - 40)
 
            // p.text(sm_a_word.substring(0, sm_a_word_index + 1), p.width / 4 * 1, p.height / 2 - 30)
         }
@@ -317,6 +334,8 @@ s9 = (p) =>
 
         basic.addSetting("speak chance", "range", 0.01, 0.001, 0.1, 0.001, true);
        
+        basic.addSetting("light dim", "range", 25, 0, 50, 0.1)
+
         basic.addSetting("slow down", "range", 0, 0, 200, 1)
 
         basic.addSetting("base pitch", "range", 200, 30, 2000, 1)
