@@ -1,64 +1,47 @@
-s11 = (p) =>
-{
-    let clockH = 300
-    let clockW = 800
+s11 = (p) => { 
 
-    isRolling = false
-    roll = 0
-    rollStep = 0.01
 
+  
     basic.p = p
 
-    p.keyPressed = () => {
-        isRolling = true
-    }
+    p.draw = () =>  {
 
-    function calculate(value, max) {
-        if (value < max / 2) {
-            y0 = 0;
-            y1 = value / (max / 2);
-        }
-        else {
-            y0 = (value - max / 2) / (max / 2);
-            y1 = 1;
-        }
 
-        return { a: y0, b: y1 }
-    }
-
-    p.draw = () => 
-    {
-        p.clear()
-
-        let a = new Date().getTime() % (60000) / 60000
-
-        x = calculate(a, 1)
-
-        if (isRolling) {
-            if (roll > 1) {
-                isRolling = false
-                roll = 0
-            } else {
-                roll += rollStep
-                let r = calculate((a + roll) % 1, 1)
-                x.a = r.a
-                x.b = r.b
-
-            }
-        }
-        p.rect(x.a * clockW, (p.height - clockH) /2, x.b * clockW,  clockH)
-    }
-
-    p.update= () => {
 
     }
-
 
     p.setup = () => 
     { 
-        basic.setup()
+
+        let position; 
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((p) => { 
+                position = p 
+                console.log(p.coords.latitude, p.coords.longitude)
+                let times = SunCalc.getTimes(new Date(), p.coords.latitude, p.coords.longitude);
+                let sunrise = times.sunrise.getTime()
+                let sunset = times.sunset.getTime()
+                console.log(times.sunrise)
+                console.log(times.sunset)
+
+                let f = new Date().getTime()
+                console.log((f - sunrise) / 1000 / 60 / 60) 
+                console.log((sunset - sunrise) / 1000 / 60 / 60)
+                console.log()
+            
+            }, () => { console.log('error') });
+        }
+
+        // let times = SunCalc.getTimes(new Date(), 51.5, -0.1);
+        // console.log(times)
+        // basic.setup()
+        p.fill("white")
+        p.text("asdfasdf", 20, 20)
+
     }
+
+
 }
 
-
-basic.createLink("s11", "clock sideways")
+basic.createLink("s11", "SunCalc")
